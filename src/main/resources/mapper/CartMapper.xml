@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.xb.store.mapper.CartMapper">
+<insert id="insertCartUid">
+    insert into t_cart(uid,pid,price,num,created_user,created_time,modified_user,modified_time)
+    values(#{uid}, #{pid}, #{price}, #{num}, #{createdUser}, #{createdTime}, #{modifiedUser}, #{modifiedTime})
+</insert>
+    <update id="updateNumByCid">
+        update t_cart set num=#{num},modified_user=#{modifiedUser},modified_time=#{modifiedTime} where cid=#{cid}
+    </update>
+    <select id="selectCartByUidAndPid" resultType="Cart">
+        select * from t_cart where uid=#{uid} and pid=#{pid}
+    </select>
+    <select id="selectAllCart" resultType="com.xb.store.vo.CartVo">
+        select cid,uid,pid,c.price as price,c.num as num,p.image as image,p.title as title,p.price as realPrice
+        from t_cart c left join t_product p on c.pid=p.id
+            where uid=#{uid}
+            order by c.modified_time desc
+    </select>
+    <select id="selectCartByCid" resultType="Cart">
+        select * from t_cart where cid=#{cid}
+    </select>
+    <update id="updateCartNumByCid">
+        update t_cart
+        set num=#{num}
+        where cid=#{cid}
+    </update>
+    <delete id="deleteCartByCid">
+        delete from t_cart where cid=#{cid}
+    </delete>
+    <select id="selectCartByCids" resultType="com.xb.store.vo.CartVo">
+        select cid,uid,pid,c.price as price,c.num as num,p.image as image,p.title as title,p.price as realPrice
+        from t_cart c left join t_product p on c.pid=p.id
+        where cid in
+        <foreach collection="cids" item="cid" open="(" close=")" separator=",">
+            #{cid}
+        </foreach>
+    </select>
+</mapper>
